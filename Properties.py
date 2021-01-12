@@ -1,0 +1,12 @@
+SQUARE_SIZE = 20
+BOARD_HEIGHT = 20
+BOARD_WIDTH = 30
+CREDENTIAL_OFFSET = 2
+BUTTON_HEIGHT = 40
+EMPTY_CELL_STYLE = "background:white; border: 1px solid black;"
+FULL_CELL_STYLE = "background:#150b45; border: 1px solid black;"
+TITLE_TEXT_STYLE = "font-size:36px;font-weight:bold;font-style:oblique;"
+AUTHOR_TEXT_STYLE = "font-size: 24px;font-weight: lighter; font-style: oblique;"
+GAME_NAME = "Gra w zycie"
+AUTHOR = "Daniel Załęski"
+MAX_STARTING_POPULATION_COUNT_PER_ROW = 3
