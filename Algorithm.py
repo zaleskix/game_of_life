@@ -1,7 +1,8 @@
 import random
-
+import time
 import numpy
 from PyQt5.QtWidgets import QLabel
+from PyQt5 import QtCore
 
 from Properties import BOARD_HEIGHT, MAX_STARTING_POPULATION_COUNT_PER_ROW, SQUARE_SIZE, BOARD_WIDTH, EMPTY_CELL_STYLE
 
@@ -40,5 +41,42 @@ def create_cells_array():
 
     return board
 
-
 CELLS_ARRAY = create_cells_array()
+
+class Algorithm(QtCore.QObject):
+    signal = QtCore.pyqtSignal(object)
+    iterations = 0
+    grid = None
+
+    def __init__(self):
+        super().__init__()
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        while True:
+            if self.iterations != 0:
+                new_grid = self.calculate_new_grid()
+                self.signal.emit(new_grid)
+                self.iterations -= 1
+
+            time.sleep(1)
+
+    def calculate_new_grid(self):
+        #TODO: opracowac czesc logiczna algorytmu
+        return calculate_new_random_grid()
+
+    def start_algorithm(self, input, error_label, info_label):
+        if input.text() == "":
+            info_label.hide()
+            error_label.setText("Musisz podać ilość iteracji. Spróbuj jeszcze raz")
+            error_label.show()
+        elif not input.text().isnumeric():
+            info_label.hide()
+            error_label.setText(
+                "Zła wartość wejściowa. Podana wartość musi być liczbą. Spróbuj jeszcze raz. ")
+            error_label.show()
+        else:
+            error_label.hide()
+            self.iterations = int(input.text())
+            info_label.setText("Ustawiono {} iteracji.".format(self.iterations))
+            info_label.show()
