@@ -1,13 +1,37 @@
 from functools import partial
 
 from PyQt5.QtCore import Qt, QThread
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget, QVBoxLayout, QInputDialog, QLineEdit, QStyle
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget, QVBoxLayout, QLineEdit
 
-from Algorithm import CELLS_ARRAY, Algorithm, calculate_new_random_grid
+from Algorithm import Algorithm
 from Properties import EMPTY_CELL_STYLE, BOARD_HEIGHT, BOARD_WIDTH, UI_ELEMENT_HEIGHT, TITLE_TEXT_STYLE, GAME_NAME, \
     AUTHOR, \
     AUTHOR_TEXT_STYLE, FULL_CELL_STYLE, BUTTON_WIDTH, BOTTOM_LABEL_TEXT_STYLE, ERROR_LABEL_TEXT_STYLE, \
     INFO_LABEL_TEXT_STYLE
+
+
+def add_error_label():
+    h_layout = QHBoxLayout()
+    h_layout.setSpacing(50)
+
+    error_label = QLabel()
+    error_label.setStyleSheet(ERROR_LABEL_TEXT_STYLE)
+    error_label.setAlignment(Qt.AlignCenter)
+    error_label.hide()
+    error_label.setText("")
+    return error_label
+
+
+def add_info_label():
+    h_layout = QHBoxLayout()
+    h_layout.setSpacing(50)
+
+    error_label = QLabel()
+    error_label.setStyleSheet(INFO_LABEL_TEXT_STYLE)
+    error_label.setAlignment(Qt.AlignCenter)
+    error_label.hide()
+    error_label.setText("")
+    return error_label
 
 
 class GUI(QWidget):
@@ -19,7 +43,7 @@ class GUI(QWidget):
     def __init__(self):
         super().__init__()
         self.new_thread = QThread()
-        self.create_main_GUI()
+        self.create_main_gui()
         self.create_async_watcher()
         self.setLayout(self.main_vertical_layout)
         self.setWindowTitle('Review')
@@ -30,18 +54,18 @@ class GUI(QWidget):
         self.algorithm.moveToThread(self.new_thread)  # Move the Worker object to the Thread object
         self.new_thread.start()
 
-    def create_main_GUI(self):
+    def create_main_gui(self):
         # głowny layout programu
         self.main_vertical_layout = QVBoxLayout(self)
-        self.error_label = self.add_error_label()
-        self.info_label = self.add_info_label()
+        self.error_label = add_error_label()
+        self.info_label = add_info_label()
 
         self.main_vertical_layout.setSpacing(0)
         self.main_vertical_layout.addStretch()
         self.main_vertical_layout.widget()
 
         self.add_credentials_header_to_GUI()
-        self.add_grid_to_GUI()
+        self.add_grid_to_gui()
 
         self.main_vertical_layout.addWidget(self.error_label)
         self.main_vertical_layout.addWidget(self.info_label)
@@ -60,22 +84,23 @@ class GUI(QWidget):
         name_label.setStyleSheet(BOTTOM_LABEL_TEXT_STYLE)
         name_label.setFixedWidth(150)
 
-        input = QLineEdit(self)
-        input.setFixedWidth(100)
-        input.setFixedHeight(40)
+        input_label = QLineEdit(self)
+        input_label.setFixedWidth(100)
+        input_label.setFixedHeight(40)
 
         start_button = QPushButton("Start simulation")
         start_button.setFixedHeight(UI_ELEMENT_HEIGHT)
         start_button.setFixedWidth(BUTTON_WIDTH)
-        start_button.clicked.connect(partial(self.algorithm.start_algorithm, input, self.error_label, self.info_label))
+        start_button.clicked.connect(
+            partial(self.algorithm.start_algorithm, input_label, self.error_label, self.info_label))
 
         row.setSpacing(25)
         row2.setSpacing(25)
-        row.setContentsMargins(50,0,50,0)
-        row2.setContentsMargins(50,0,50,0)
+        row.setContentsMargins(50, 0, 50, 0)
+        row2.setContentsMargins(50, 0, 50, 0)
 
         row.addWidget(name_label)
-        row.addWidget(input)
+        row.addWidget(input_label)
 
         row2.addWidget(start_button)
 
@@ -84,7 +109,7 @@ class GUI(QWidget):
         self.main_vertical_layout.addWidget(QLabel())
 
     def clear_grid(self):
-        for row in CELLS_ARRAY:
+        for row in self.algorithm.cells:
             for cell in row:
                 cell.setStyleSheet(EMPTY_CELL_STYLE)
 
@@ -93,42 +118,21 @@ class GUI(QWidget):
         if self.algorithm.iterations != 0:
             self.info_label.setText("Iteracje pozostałe do końca {}".format(self.algorithm.iterations))
         else:
-            self.info_label.setText("Algorytm zakończył działanie. \nMożesz ustawić nową liczbe iteracji i rozpoczać od nowa")
+            self.info_label.setText(
+                "Algorytm zakończył działanie. \nMożesz ustawić nową liczbe iteracji i rozpoczać od nowa")
 
         self.info_label.show()
         for i in range(BOARD_HEIGHT):
             for j in range(BOARD_WIDTH):
                 if new_grid[i][j] == 1:
-                    CELLS_ARRAY[i][j].setStyleSheet(FULL_CELL_STYLE)
+                    self.algorithm.cells[i][j].setStyleSheet(FULL_CELL_STYLE)
 
-    def add_error_label(self):
-        h_layout = QHBoxLayout()
-        h_layout.setSpacing(50)
-
-        error_label = QLabel()
-        error_label.setStyleSheet(ERROR_LABEL_TEXT_STYLE)
-        error_label.setAlignment(Qt.AlignCenter)
-        error_label.hide()
-        error_label.setText("")
-        return error_label
-
-    def add_info_label(self):
-        h_layout = QHBoxLayout()
-        h_layout.setSpacing(50)
-
-        error_label = QLabel()
-        error_label.setStyleSheet(INFO_LABEL_TEXT_STYLE)
-        error_label.setAlignment(Qt.AlignCenter)
-        error_label.hide()
-        error_label.setText("")
-        return error_label
-
-    def add_grid_to_GUI(self):
+    def add_grid_to_gui(self):
         for x in range(BOARD_HEIGHT):
             row = QHBoxLayout()
             row.setSpacing(0)
             for y in range(BOARD_WIDTH):
-                row.addWidget(CELLS_ARRAY[x][y])
+                row.addWidget(self.algorithm.cells[x][y])
 
             self.main_vertical_layout.addLayout(row)
         self.main_vertical_layout.addWidget(QLabel())

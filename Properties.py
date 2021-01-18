@@ -13,4 +13,4 @@ ERROR_LABEL_TEXT_STYLE = "font-size: 14px;font-weight: bold;  text-align:right; 
 INFO_LABEL_TEXT_STYLE = "font-size: 14px; font-weight: lighter;font-style: oblique; text-align:right; color:150b45;"
 GAME_NAME = "Gra w zycie"
 AUTHOR = "Daniel Załęski"
-MAX_STARTING_POPULATION_COUNT_PER_ROW = 3
+MAX_STARTING_POPULATION_COUNT_PER_ROW = 30
